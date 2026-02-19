@@ -1,0 +1,28 @@
+# Visual Studio-specific files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vscode/
+
+# Build output directories
+bin/
+obj/
+out/
+
+# ASP.NET Core environment files
+secrets.json
+.env
+
+# Logs and debugging
+logs/
+*.log
+Debug/
+RELEASE/
+
+# User-specific files
+*.suo
+*.user
+*.ttf
+*.pdb
