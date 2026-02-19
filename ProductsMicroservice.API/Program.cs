@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ExceptionHandlingMiddleware>();
 
-builder.Services.AddDataAccess();
+builder.Services.AddDataAccess(builder.Configuration);
 
 builder.Services.AddBusinessLogic();
 
