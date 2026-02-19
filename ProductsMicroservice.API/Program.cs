@@ -1,8 +1,11 @@
 using BusinessLogic;
 using DataAccess;
+using FluentValidation.AspNetCore;
 using ProductsMicroservice.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddControllers();
 
