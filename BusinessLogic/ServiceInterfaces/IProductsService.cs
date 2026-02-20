@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace BusinessLogic.ServiceInterfaces;
 
-public interface IProductsInterface
+public interface IProductsService
 {
     Task<List<ProductResponse?>> GetProductsAsync();
 
