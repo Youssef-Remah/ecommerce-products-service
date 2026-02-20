@@ -2,6 +2,7 @@ using BusinessLogic;
 using DataAccess;
 using FluentValidation.AspNetCore;
 using ProductsMicroservice.API.Middlewares;
+using ProductsMicroservice.API.ProductsEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,5 +26,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapProductAPIEndpoints();
 
 app.Run();
