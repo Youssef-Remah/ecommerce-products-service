@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.DTOs;
 using BusinessLogic.ServiceInterfaces;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProductsMicroservice.API.ProductsEndpoints;
 
@@ -27,11 +28,13 @@ public static class ProductsAPIEndpoints
         //GET /api/products/search/{search-filter}
         app.MapGet("/api/products/search/{filter}", async (IProductsService productService, string filter) =>
         {
+            //var productsByName = await productService.GetProductsAsync(p => p.ProductName != null &&
+            //                                  p.ProductName.Contains(filter, StringComparison.OrdinalIgnoreCase));
             var productsByName = await productService.GetProductsAsync(p => p.ProductName != null &&
-                                              p.ProductName.Contains(filter, StringComparison.OrdinalIgnoreCase));
+                                              EF.Functions.Like(p.ProductName, $"%{filter}%"));
 
             var productsByCategory = await productService.GetProductsAsync(p => p.Category != null &&
-                                              p.Category.Contains(filter, StringComparison.OrdinalIgnoreCase));
+                                              EF.Functions.Like(p.Category, $"%{filter}%"));
 
             var products = productsByName.Union(productsByCategory);
 
@@ -83,7 +86,7 @@ public static class ProductsAPIEndpoints
         });
 
         //DELETE /api/products/{id}
-        app.MapPut("/api/products/{id:guid}", async (IProductsService productService, Guid id) =>
+        app.MapDelete("/api/products/{id:guid}", async (IProductsService productService, Guid id) =>
         {
             var isDeleted = await productService.DeleteProductAsync(id);
 

@@ -93,7 +93,7 @@ public class ProductsService(IMapper mapper,
             throw new ArgumentException(errors);
         }
 
-        var updateResponse = _mapper.Map<Product>(product);
+        var updateResponse = _mapper.Map<Product>(productRequest);
 
         var response = await _productsRepository.UpdateProductAsync(updateResponse);
 
