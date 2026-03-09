@@ -11,9 +11,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddDataAccess(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("DefaultConnection")!
+                                            .Replace("$MYSQL_HOST", Environment.GetEnvironmentVariable("MYSQL_HOST"))
+                                            .Replace("$MYSQL_PASSWORD", Environment.GetEnvironmentVariable("MYSQL_PASSWORD"))
+                                            .Replace("$MYSQL_PORT", Environment.GetEnvironmentVariable("MYSQL_PORT"));
+
+
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseMySQL(configuration.GetConnectionString("DefaultConnection")!);
+            options.UseMySQL(connectionString);
         });
 
         services.AddScoped<IProductsRepository, ProductsRepository>();
