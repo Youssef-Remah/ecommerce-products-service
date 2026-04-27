@@ -22,6 +22,8 @@ public static class ProductsAPIEndpoints
         {
             var product = await productService.GetSingleProductAsync(p => p.ProductID == id);
 
+            if (product == null) return Results.NotFound();
+
             return Results.Ok(product);
         });
 
