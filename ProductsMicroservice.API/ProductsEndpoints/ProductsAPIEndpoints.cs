@@ -20,6 +20,9 @@ public static class ProductsAPIEndpoints
         //GET /api/products/search/product-id/{id}
         app.MapGet("/api/products/search/product-id/{id:guid}", async (IProductsService productService, Guid id) =>
         {
+            //await Task.Delay(100);
+            //throw new NotImplementedException();
+
             var product = await productService.GetSingleProductAsync(p => p.ProductID == id);
 
             if (product == null) return Results.NotFound();
