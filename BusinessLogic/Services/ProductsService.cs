@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogic.DTOs;
+using BusinessLogic.RabbitMQ;
 using BusinessLogic.ServiceInterfaces;
 using DataAccess.Entities;
 using DataAccess.RepositoryInterfaces;
@@ -8,15 +9,26 @@ using System.Linq.Expressions;
 
 namespace BusinessLogic.Services;
 
-public class ProductsService(IMapper mapper,
-                             IProductsRepository productsRepository,
-                             IValidator<ProductAddRequest> productAddValidator,
-                             IValidator<ProductUpdateRequest> productUpdateValidator): IProductsService
+public class ProductsService : IProductsService
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly IProductsRepository _productsRepository = productsRepository;
-    private readonly IValidator<ProductAddRequest> _productAddValidator = productAddValidator;
-    private readonly IValidator<ProductUpdateRequest> _productUpdateValidator = productUpdateValidator;
+    private readonly IMapper _mapper;
+    private readonly IProductsRepository _productsRepository;
+    private readonly IValidator<ProductAddRequest> _productAddValidator;
+    private readonly IValidator<ProductUpdateRequest> _productUpdateValidator;
+    private readonly IRabbitMQPublisher _rabbitMQPublisher;
+
+    public ProductsService(IMapper mapper,
+                           IProductsRepository productsRepository,
+                           IValidator<ProductAddRequest> productAddValidator,
+                           IValidator<ProductUpdateRequest> productUpdateValidator,
+                           IRabbitMQPublisher rabbitMQPublisher)
+    {
+        _mapper = mapper;
+        _productsRepository = productsRepository;
+        _productAddValidator = productAddValidator;
+        _productUpdateValidator = productUpdateValidator;
+        _rabbitMQPublisher = rabbitMQPublisher;
+    }
 
     public async Task<ProductResponse?> AddProductAsync(ProductAddRequest productRequest)
     {
@@ -95,7 +107,16 @@ public class ProductsService(IMapper mapper,
 
         var updateResponse = _mapper.Map<Product>(productRequest);
 
+        bool isProductNameChanged = productRequest.ProductName != product.ProductName;
+
         var response = await _productsRepository.UpdateProductAsync(updateResponse);
+
+        if (isProductNameChanged)
+        {
+            var routingKey = "product.update.name";
+            var message = new ProductNameUpdateMessage(response.ProductID, response.ProductName);
+            _rabbitMQPublisher.Publish(routingKey, message);
+        }
 
         var productResponse = _mapper.Map<ProductResponse?>(response);
 

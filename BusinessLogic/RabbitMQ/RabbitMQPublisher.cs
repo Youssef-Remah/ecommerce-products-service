@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
+using System.Text;
+using System.Text.Json;
 
 namespace BusinessLogic.RabbitMQ
 {
@@ -38,7 +40,19 @@ namespace BusinessLogic.RabbitMQ
 
         public void Publish<T>(string routingKey, T message)
         {
-            throw new NotImplementedException();
+            var messageJson = JsonSerializer.Serialize(message);
+            var messageInBytes = Encoding.UTF8.GetBytes(messageJson);
+            var exchangeName = _configuration["RabbitMQ_Products_Exchange"];
+
+            //Create Exchange
+            _channel.ExchangeDeclare(exchange: exchangeName,
+                                     type: ExchangeType.Direct,
+                                     durable: true);
+            //Publish Message
+            _channel.BasicPublish(exchange: exchangeName,
+                                  routingKey: routingKey,
+                                  basicProperties: null,
+                                  body: messageInBytes);
         }
     }
 }
