@@ -59,7 +59,16 @@ public class ProductsService : IProductsService
 
         if (product is null) return false;
 
-        return await _productsRepository.DeleteProductAsync(productID);
+        var isDeleted = await _productsRepository.DeleteProductAsync(productID);
+
+        if (isDeleted)
+        {
+            var message = new ProductDeletionMessage(product.ProductID, product.ProductName);
+            var routingKey = "product.delete";
+            _rabbitMQPublisher.Publish(routingKey, message);
+        }
+
+        return isDeleted;
     }
 
     public async Task<List<ProductResponse?>> GetProductsAsync()
