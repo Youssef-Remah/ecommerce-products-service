@@ -16,6 +16,11 @@ namespace BusinessLogic.RabbitMQ
         {
             _configuration = configuration;
 
+            Console.WriteLine($"RabbitMQ_HostName: {_configuration["RabbitMQ_HostName"]!} " +
+                              $"RabbitMQ_UserName: {_configuration["RabbitMQ_UserName"]!} " +
+                              $"RabbitMQ_Password: {_configuration["RabbitMQ_Password"]!} " +
+                              $"RabbitMQ_Port: {_configuration["RabbitMQ_Port"]!}");
+
             hostname = _configuration["RabbitMQ_HostName"]!;
             username = _configuration["RabbitMQ_UserName"]!;
             password = _configuration["RabbitMQ_Password"]!;
